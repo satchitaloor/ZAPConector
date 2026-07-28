@@ -9,14 +9,26 @@ class ZAPConnector:
         else:
             self.zap = None
 
-    def start_scan(self, target: str):
+    def zap_version(self):
+        if not self.zap:
+            raise RuntimeError("ZAP not configured")
+        return self.zap.core.version
+
+    def start_spider(self, target: str):
+        if not self.zap:
+            raise RuntimeError("ZAP not configured")
+        return self.zap.spider.scan(target)
+
+    def start_active_scan(self, target: str):
         if not self.zap:
             raise RuntimeError("ZAP not configured")
         return self.zap.ascan.scan(target)
 
-    def scan_status(self, scan_id: str):
+    def scan_status(self, scan_id: str, scan_type: str = "active"):
         if not self.zap:
             raise RuntimeError("ZAP not configured")
+        if scan_type == "spider":
+            return self.zap.spider.status(scan_id)
         return self.zap.ascan.status(scan_id)
 
     def get_alerts(self, baseurl=None, start=0, count=50):
